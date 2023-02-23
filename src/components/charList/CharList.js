@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import useMarvelService from '../../services/MarvelService';
 import PropTypes from 'prop-types';
 
@@ -47,37 +48,41 @@ const CharList = (props) => {
     }
 
     function renderList(arr) {
+
         const items = arr.map((item, i) => {
             let imgStyle = { 'objectFit': 'cover' };
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
                 imgStyle = { 'objectFit': 'contain' }
             }
             return (
-                <li
-                    key={item.id}
-                    tabIndex={0}
-                    ref={el => itemRefs.current[i] = el}
-                    className="char__item"
-                    onClick={() => {
-                        props.onCharSelected(item.id);
-                        focusOnItem(i);
-                    }}
-                    onKeyPress={(e) => {
-                        if (e.key === ' ' || e.key === "Enter") {
+                <CSSTransition key={item.id} timeout={600} classNames="char__item">
+                    <li
+
+                        tabIndex={0}
+                        ref={el => itemRefs.current[i] = el}
+                        className="char__item"
+                        onClick={() => {
                             props.onCharSelected(item.id);
                             focusOnItem(i);
-                        }
-                    }}
-                >
-                    <img src={item.thumbnail} alt={item.name} style={imgStyle} />
-                    <div className="char__name">{item.name}</div>
-                </li>
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === ' ' || e.key === "Enter") {
+                                props.onCharSelected(item.id);
+                                focusOnItem(i);
+                            }
+                        }}>
+                        <img src={item.thumbnail} alt={item.name} style={imgStyle} />
+                        <div className="char__name">{item.name}</div>
+                    </li>
+                </CSSTransition>
             )
         })
 
         return (
             <ul className="char__grid">
-                {items}
+                <TransitionGroup component={null}>
+                    {items}
+                </TransitionGroup>
             </ul>
         )
     }
